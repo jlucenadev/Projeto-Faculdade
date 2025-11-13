@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout • Chef Express</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Chef Express</a>
+      <a href="carrinho.html" class="btn-link">Voltar ao Carrinho</a>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <h1>Finalizar Pedido</h1>
+
+    <form id="checkoutForm" class="checkout-form">
+      <fieldset>
+        <legend>Endereço</legend>
+        <input type="text" id="rua" placeholder="Rua" required />
+        <input type="text" id="numero" placeholder="Número" required />
+        <input type="text" id="bairro" placeholder="Bairro" required />
+        <input type="text" id="cidade" placeholder="Cidade" required />
+        <input type="text" id="referencia" placeholder="Referência (opcional)" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Pagamento</legend>
+        <select id="pagamento" required>
+          <option value="">Escolha...</option>
+          <option value="pix">Pix</option>
+          <option value="cartao">Cartão</option>
+          <option value="dinheiro">Dinheiro</option>
+        </select>
+        <input type="number" id="troco" placeholder="Troco para quanto?" style="display:none" />
+      </fieldset>
+
+      <button type="submit" class="btn-primary">Confirmar Pedido</button>
+    </form>
+
+    <div id="toast" class="toast" aria-hidden="true"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© <span id="year"></span> Chef Express</small>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/checkout.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const pag = document.getElementById('pagamento');
+    const troco = document.getElementById('troco');
+    pag.addEventListener('change', () => {
+      troco.style.display = pag.value === 'dinheiro' ? 'block' : 'none';
+    });
+  </script>
+</body>
+</html>

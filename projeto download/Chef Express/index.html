@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cardápio • Chef Express</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Chef Express</a>
+      <div class="search-wrap">
+        <input id="searchInput" type="search" placeholder="Buscar prato ou ingrediente..." />
+      </div>
+      <nav class="header-actions">
+        <a id="loginLink" href="login.html" class="btn-link">Entrar</a>
+        <a id="cartLink" href="carrinho.html" class="cart-btn" aria-label="Carrinho">
+          <span class="cart-icon">🧺</span>
+          <span id="cartBadge" class="badge">0</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <section class="hero">
+      <h1 class="hero-title">Cardápio</h1>
+      <p class="hero-sub">Escolha seus pratos. Toque em adicionar para incluir no carrinho.</p>
+    </section>
+
+    <section class="controls">
+      <div class="filters">
+        <label for="categorySelect">Categoria</label>
+        <select id="categorySelect">
+          <option value="all">Todas</option>
+        </select>
+      </div>
+      <div class="sort">
+        <label for="sortSelect">Ordenar</label>
+        <select id="sortSelect">
+          <option value="default">Padrão</option>
+          <option value="price-asc">Menor preço</option>
+          <option value="price-desc">Maior preço</option>
+          <option value="name-asc">A-Z</option>
+        </select>
+      </div>
+    </section>
+
+    <section id="productsGrid" class="products-grid" aria-live="polite">
+    </section>
+
+    <div id="toast" class="toast" aria-hidden="true"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© <span id="year"></span> Chef Express — Protótipo</small>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/produtos.js"></script>
+  <script src="js/carrinho.js"></script>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function getCategories(list){
+      const s = new Set(list.map(p=>p.categoria));
+      return Array.from(s).sort();
+    }
+
+    function capitalize(s){ return s? s.charAt(0).toUpperCase() + s.slice(1): s; }
+
+    function renderFiltered() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const cat = document.getElementById('categorySelect').value;
+      const sort = document.getElementById('sortSelect').value;
+      let list = produtos.slice();
+
+      if (cat !== 'all') list = list.filter(p => p.categoria === cat);
+      if (q) list = list.filter(p => (p.nome + ' ' + (p.descricao||'')).toLowerCase().includes(q));
+
+      if (sort === 'price-asc') list.sort((a,b)=>a.preco-b.preco);
+      else if (sort === 'price-desc') list.sort((a,b)=>b.preco-a.preco);
+      else if (sort === 'name-asc') list.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+
+      renderProdutos(list);
+    }
+
+    // preencher categorias
+    const categories = getCategories(produtos);
+    const catSelect = document.getElementById('categorySelect');
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = capitalize(cat);
+      catSelect.appendChild(opt);
+    });
+
+    document.getElementById('searchInput').addEventListener('input', debounce(renderFiltered, 250));
+    document.getElementById('categorySelect').addEventListener('change', renderFiltered);
+    document.getElementById('sortSelect').addEventListener('change', renderFiltered);
+
+    updateBadgeCarrinho();
+    renderFiltered();
+  </script>
+</body>
+</html>

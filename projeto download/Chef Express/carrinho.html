@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carrinho • Chef Express</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Chef Express</a>
+      <nav class="header-actions">
+        <a href="index.html" class="btn-link">Cardápio</a>
+        <a href="login.html" class="btn-link">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <h1>Seu Carrinho</h1>
+    <p class="hero-sub">Revise seus itens antes de finalizar.</p>
+
+    <section id="cartItems" class="cart-list"></section>
+
+    <div class="cart-summary">
+      <p>Total: <strong id="cartTotal">R$ 0,00</strong></p>
+      <div class="cart-buttons">
+        <button id="clearCartBtn" class="btn-outline">Esvaziar</button>
+        <a href="checkout.html" id="checkoutBtn" class="btn-primary">Finalizar Pedido</a>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" aria-hidden="true"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© <span id="year"></span> Chef Express</small>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    function renderCarrinho() {
+      const wrap = document.getElementById('cartItems');
+      const totalEl = document.getElementById('cartTotal');
+      const cart = carregarCarrinhoLocal();
+      wrap.innerHTML = '';
+      if (cart.length === 0) {
+        wrap.innerHTML = '<p class="muted">Seu carrinho está vazio.</p>';
+        totalEl.textContent = 'R$ 0,00';
+        return;
+      }
+      let total = 0;
+      cart.forEach(item => {
+        const subtotal = item.preco * item.quantidade;
+        total += subtotal;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <img src="${item.imagem || 'img/placeholder.png'}" alt="${item.nome}" class="thumb">
+          <div class="info">
+            <h3>${item.nome}</h3>
+            <p>${item.quantidade} x R$ ${item.preco.toFixed(2).replace('.', ',')}</p>
+            <p class="subtotal">Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <button class="remove-btn" data-id="${item.id}">✕</button>
+        `;
+        wrap.appendChild(div);
+      });
+      totalEl.textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+    }
+
+    document.getElementById('cartItems').addEventListener('click', e => {
+      if (e.target.classList.contains('remove-btn')) {
+        const id = e.target.dataset.id;
+        const cart = carregarCarrinhoLocal().filter(i => i.id !== id);
+        salvarCarrinhoLocal(cart);
+        showToast('Item removido');
+        renderCarrinho();
+        updateBadgeCarrinho();
+      }
+    });
+
+    document.getElementById('clearCartBtn').onclick = () => {
+      localStorage.removeItem('carrinho');
+      showToast('Carrinho esvaziado');
+      renderCarrinho();
+      updateBadgeCarrinho();
+    };
+
+    renderCarrinho();
+  </script>
+</body>
+</html>

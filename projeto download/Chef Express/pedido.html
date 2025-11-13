@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pedido • Chef Express</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Chef Express</a>
+      <a href="index.html" class="btn-link">Novo Pedido</a>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <h1>Status do Pedido</h1>
+    <div id="pedidoBox" class="pedido-box"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© <span id="year"></span> Chef Express</small>
+    </div>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/pedido.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
