@@ -1,15 +1,24 @@
 import express from "express";
 import mysql from "mysql2/promise";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import cors from "cors";
 import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// 🟢 CONEXÃO MYSQL
+// Servir arquivos estáticos (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, "..")));
+
+// ================================
+// 🔌 Conexão MySQL
+// ================================
 const db = await mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -17,86 +26,90 @@ const db = await mysql.createPool({
   database: process.env.DB_NAME
 });
 
-// 🔹 FUNÇÃO PARA LIMPAR CPF
-function limparCPF(cpf) {
-  return cpf.replace(/\D/g, "");
-}
+// ================================
+// 🟢 Cadastro
+// ================================
+aapp.post("/register", async (req, res) => {
+  const { nome, email, senha, cpf, endereco1, endereco2 } = req.body;
 
-// 🟢 CADASTRO
-app.post("/register", async (req, res) => {
-  let { nome, email, senha, cpf, endereco1, endereco2 } = req.body;
+  console.log("Cadastro recebido:", { nome, email, senha, cpf, endereco1, endereco2 });
 
   if (!nome || !email || !senha || !cpf || !endereco1) {
-    return res.status(400).json({ error: "Dados incompletos" });
+    return res.status(400).json({ error: "Preencha todos os campos obrigatórios" });
   }
-
-  cpf = limparCPF(cpf);
-
-  if (cpf.length !== 11) {
-    return res.status(400).json({ error: "CPF inválido" });
-  }
-
-  const hash = await bcrypt.hash(senha, 10);
 
   try {
-    await db.query(
-      `INSERT INTO usuarios (nome, email, senha_hash, cpf, endereco1, endereco2)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [nome, email, hash, cpf, endereco1, endereco2 ?? null]
-    );
+    const hash = await bcrypt.hash(senha, 10);
 
-    res.json({ message: "Usuário cadastrado com sucesso!" });
+    const query = `
+      INSERT INTO usuarios 
+      (nome, email, senha_hash, cpf, endereco1, endereco2) 
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    await db.query(query, [nome, email, hash, cpf, endereco1, endereco2 || ""]);
+
+    res.json({ message: "Usuário cadastrado!" });
+
   } catch (err) {
-    console.log(err);
-    res.status(400).json({ error: "Email ou CPF já cadastrados" });
+    console.error("❌ ERRO REGISTRO:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// 🟢 LOGIN
+
+// ================================
+// 🔵 Login
+// ================================
 app.post("/login", async (req, res) => {
   const { email, senha } = req.body;
 
-  const [rows] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
+  if (!email || !senha) {
+    return res.status(400).json({ error: "Email e senha são obrigatórios" });
+  }
 
-  if (!rows.length) return res.status(401).json({ error: "Usuário não encontrado" });
+  try {
+    const [rows] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
 
-  const user = rows[0];
+    if (!rows.length) return res.status(401).json({ error: "Usuário não encontrado" });
 
-  const ok = await bcrypt.compare(senha, user.senha_hash);
-  if (!ok) return res.status(401).json({ error: "Senha incorreta" });
+    const user = rows[0];
+    const senhaOK = await bcrypt.compare(senha, user.senha_hash);
 
-  const token = jwt.sign(
-    { id: user.id, nome: user.nome, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: "3h" }
-  );
+    if (!senhaOK) return res.status(401).json({ error: "Senha incorreta" });
 
-  res.json({
-    message: "Login realizado!",
-    token,
-    usuario: {
+    // Retorna dados do usuário
+    res.json({
       id: user.id,
       nome: user.nome,
-      email: user.email
-    }
-  });
-});
+      email: user.email,
+      cpf: user.cpf,
+      endereco1: user.endereco1,
+      endereco2: user.endereco2
+    });
 
-// 🟢 ROTA TESTE (VER SE LOGIN FUNCIONA)
-app.get("/me", async (req, res) => {
-  try {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-
-    if (!token) return res.status(401).json({ error: "Token ausente" });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    res.json({ autenticado: true, usuario: decoded });
-  } catch {
-    res.status(401).json({ autenticado: false });
+  } catch (err) {
+    console.error("❌ ERRO LOGIN:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-app.listen(3000, () =>
-  console.log("🔥 Servidor rodando em http://localhost:3000")
-);
+// ================================
+// 🟣 Rota de pedidos (simulação local)
+// ================================
+app.get("/pedidos", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM pedidos");
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ ERRO PEDIDOS:", err);
+    res.status(500).json([]);
+  }
+});
+
+// ================================
+// 🚀 Iniciar servidor
+// ================================
+app.listen(3000, () => {
+  console.log("🔥 Servidor rodando em http://localhost:3000");
+});

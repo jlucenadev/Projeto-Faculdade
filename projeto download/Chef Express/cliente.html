@@ -1,33 +1,87 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Minha Conta • Chef Express</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Perfil • Chef Express</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
+  <main class="container main-content">
+    <h1>Meu Perfil</h1>
 
-<main class="container main-content">
+    <p>Nome: <span id="userNome"></span></p>
+    <p>E-mail: <span id="userEmail"></span></p>
+    <p>Endereço: <span id="userEndereco"></span> 
+      <button id="trocarEnderecoBtn">Trocar endereço</button>
+    </p>
+    <button id="logoutBtn">Sair</button>
 
-  <h1>Minha Conta</h1>
+    <h2>Meus Pedidos</h2>
+    <ul id="listaPedidos"></ul>
+  </main>
 
-  <p><strong>Nome:</strong> <span id="userNome"></span></p>
-  <p><strong>Email:</strong> <span id="userEmail"></span></p>
+  <script>
+    // Pegar dados do usuário do localStorage
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
 
-  <hr>
+    if (!usuario) {
+      alert("Você precisa fazer login primeiro");
+      location.href = "login.html";
+    }
 
-  <h2>Meus Pedidos</h2>
-  <ul id="listaPedidos"></ul>
+    // Preencher dados do perfil
+    document.getElementById("userNome").textContent = usuario.nome;
+    document.getElementById("userEmail").textContent = usuario.email;
+    document.getElementById("userEndereco").textContent = usuario.endereco1;
 
-  <hr>
+    // Trocar endereço
+    document.getElementById("trocarEnderecoBtn").addEventListener("click", () => {
+      const novoEndereco = prompt("Digite seu novo endereço:");
+      if (novoEndereco) {
+        usuario.endereco1 = novoEndereco;
+        document.getElementById("userEndereco").textContent = novoEndereco;
+        localStorage.setItem("usuario", JSON.stringify(usuario));
+        alert("Endereço atualizado!");
+      }
+    });
 
-  <button id="logoutBtn" class="btn-primary">Sair da Conta</button>
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("usuario");
+      location.href = "login.html";
+    });
 
-</main>
+    // Carregar pedidos (apenas do usuário logado)
+    async function carregarPedidos() {
+      let pedidos = [];
+      try {
+        const res = await fetch("http://localhost:3000/pedidos");
+        if (res.ok) pedidos = await res.json();
+      } catch {
+        console.warn("⚠️ Sem rota de pedidos no servidor, usando localStorage");
+      }
 
-<script src="js/cliente.js"></script>
+      if (!pedidos.length) {
+        pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+      }
 
+      pedidos = pedidos.filter(p => p.email === usuario.email);
+
+      const lista = document.getElementById("listaPedidos");
+      lista.innerHTML = "";
+      if (pedidos.length === 0) {
+        lista.innerHTML = "<li>Nenhum pedido ainda.</li>";
+      } else {
+        pedidos.forEach(p => {
+          const li = document.createElement("li");
+          li.textContent = `🧾 Pedido #${p.id} • Total: R$ ${p.total} • ${p.data}`;
+          lista.appendChild(li);
+        });
+      }
+    }
+
+    carregarPedidos();
+  </script>
 </body>
 </html>
