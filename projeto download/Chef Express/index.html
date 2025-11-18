@@ -10,11 +10,15 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.html">Chef Express</a>
+
       <div class="search-wrap">
         <input id="searchInput" type="search" placeholder="Buscar prato ou ingrediente..." />
       </div>
+
       <nav class="header-actions">
         <a id="loginLink" href="login.html" class="btn-link">Entrar</a>
+        <a id="perfilLink" href="cliente.html" class="btn-link" style="display:none">Meu Perfil</a>
+        <span id="userNomeHeader" style="margin-left:10px; font-weight:bold;"></span>
         <a id="cartLink" href="carrinho.html" class="cart-btn" aria-label="Carrinho">
           <span class="cart-icon">🧺</span>
           <span id="cartBadge" class="badge">0</span>
@@ -59,6 +63,7 @@
     </div>
   </footer>
 
+  <!-- Scripts -->
   <script src="js/utils.js"></script>
   <script src="js/produtos.js"></script>
   <script src="js/carrinho.js"></script>
@@ -66,6 +71,15 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
+    // Mostrar/ocultar login e perfil dependendo se usuário está logado
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (usuario) {
+      document.getElementById("loginLink").style.display = "none";
+      document.getElementById("perfilLink").style.display = "block";
+      document.getElementById("userNomeHeader").textContent = usuario.nome;
+    }
+
+    // Categorias e produtos
     function getCategories(list){
       const s = new Set(list.map(p=>p.categoria));
       return Array.from(s).sort();
@@ -89,7 +103,7 @@
       renderProdutos(list);
     }
 
-    // preencher categorias
+    // Preencher categorias
     const categories = getCategories(produtos);
     const catSelect = document.getElementById('categorySelect');
     categories.forEach(cat => {

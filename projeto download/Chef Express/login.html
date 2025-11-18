@@ -8,28 +8,38 @@
 </head>
 <body>
   <main class="container main-content">
-    <main class="container main-content">
-  <h1 id="loginTitulo">Login do Cliente</h1>
+    <h1 id="loginTitulo">Login do Cliente</h1>
 
-  <form id="loginForm" class="login-form">
-    <input type="text" id="nome" placeholder="Nome" required />
-    <input type="email" id="email" placeholder="E-mail" required />
-    <input type="password" id="senha" placeholder="Senha" required style="display:none" />
-    <button type="submit" class="btn-primary">Entrar</button>
-  </form>
+    <form id="loginForm" class="login-form">
+      <!-- Nome (aparece apenas no cadastro) -->
+      <input type="text" id="nome" placeholder="Nome" style="display:none" />
 
-  <p class="muted" style="text-align:center;margin-top:12px;">
-    <a href="#" id="toggleMode">Ainda não tem conta? Criar</a>
-  </p>
+      <!-- Email sempre visível -->
+      <input type="email" id="email" placeholder="E-mail" required />
 
-  <div id="toast" class="toast" aria-hidden="true"></div>
-</main>
+      <!-- Senha sempre visível -->
+      <input type="password" id="senha" placeholder="Senha" required />
 
-<script src="js/utils.js"></script>
-<script src="js/login.js"></script>
+      <!-- CPF (aparece apenas no cadastro) -->
+      <input type="text" id="cpf" placeholder="CPF (xxx.xxx.xxx-xx)" maxlength="14" style="display:none" />
 
+      <!-- Endereço 1 (aparece apenas no cadastro) -->
+      <input type="text" id="endereco1" placeholder="Endereço principal" style="display:none" />
+
+      <!-- Endereço 2 (opcional, aparece apenas no cadastro) -->
+      <input type="text" id="endereco2" placeholder="Endereço opcional" style="display:none" />
+
+      <button type="submit" class="btn-primary">Entrar</button>
+    </form>
+
+    <p class="muted" style="text-align:center;margin-top:12px;">
+      <a href="#" id="toggleMode">Ainda não tem conta? Criar</a>
+    </p>
+
+    <div id="toast" class="toast" aria-hidden="true"></div>
   </main>
 
+  <!-- JS -->
   <script src="js/utils.js"></script>
   <script src="js/login.js"></script>
 </body>

@@ -120,9 +120,12 @@ input, select {
   padding: 4px 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
 }
 .status.Entregue { background: #d4f8d3; color: #206420; }
-.status["Em preparo"], .status.Em\ preparo { background: #fff3cd; color: #665c1e; }
+
+.status.Em-preparo { background: #fff3cd; color: #665c1e; }
+
 .status.Cancelado { background: #f8d7da; color: #842029; }
-.status["Recebido"], .status.Recebido { background: #e7e3ff; color: #4338ca; }
+
+.status.Recebido { background: #e7e3ff; color: #4338ca; }
 
 /* FOOTER */
 .site-footer { border-top: 1px solid var(--border); color: var(--muted); text-align: center; padding: 18px 0; }
@@ -136,3 +139,81 @@ input, select {
   transition: all 0.25s ease; pointer-events: none;
 }
 .toast.show { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+/* ============================
+   ÁREA DO CLIENTE (DASHBOARD)
+============================ */
+
+.cliente-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.cliente-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.cliente-header p {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Melhor visual nos cards */
+.dashboard-cards .card {
+  transition: 0.25s;
+}
+.dashboard-cards .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px var(--shadow);
+}
+
+/* Tabela de pedidos */
+.pedido-lista {
+  margin-top: 32px;
+}
+
+.pedido-lista table {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.pedido-lista tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Status colorido atualizado */
+.status {
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+/* Botão editar */
+.cliente-actions {
+  margin-top: 26px;
+  text-align: center;
+}
+
+.cliente-actions button {
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: transparent;
+  transition: 0.2s;
+}
+
+.cliente-actions button:hover {
+  background: var(--border);
+}
+
+/* Botão Sair no Header */
+#logoutBtn {
+  border-color: var(--border);
+  font-size: .9rem;
+}
+#logoutBtn:hover {
+  background: var(--border);
+}
