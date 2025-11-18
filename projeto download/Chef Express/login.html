@@ -7,33 +7,40 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <main class="container main-content">
+    <h1 id="loginTitulo">Login do Cliente</h1>
 
-<main class="container main-content">
+    <form id="loginForm" class="login-form">
+      <!-- Nome (aparece apenas no cadastro) -->
+      <input type="text" id="nome" placeholder="Nome" style="display:none" />
 
-  <h1 id="loginTitulo">Login do Cliente</h1>
+      <!-- Email sempre visível -->
+      <input type="email" id="email" placeholder="E-mail" required />
 
-  <form id="loginForm" class="login-form">
+      <!-- Senha sempre visível -->
+      <input type="password" id="senha" placeholder="Senha" required />
 
-    <input type="text" id="nome" placeholder="Nome" required />
+      <!-- CPF (aparece apenas no cadastro) -->
+      <input type="text" id="cpf" placeholder="CPF" style="display:none" />
 
-    <input type="email" id="email" placeholder="E-mail" required />
+      <!-- Endereço 1 (aparece apenas no cadastro) -->
+      <input type="text" id="endereco1" placeholder="Endereço principal" style="display:none" />
 
-    <input type="password" id="senha" placeholder="Senha" required />
+      <!-- Endereço 2 (opcional, aparece apenas no cadastro) -->
+      <input type="text" id="endereco2" placeholder="Endereço opcional" style="display:none" />
 
-    <button type="submit" class="btn-primary">Entrar</button>
+      <button type="submit" class="btn-primary">Entrar</button>
+    </form>
 
-  </form>
+    <p class="muted" style="text-align:center;margin-top:12px;">
+      <a href="#" id="toggleMode">Ainda não tem conta? Criar</a>
+    </p>
 
-  <p class="muted" style="text-align:center;margin-top:12px;">
-    <a href="#" id="toggleMode">Ainda não tem conta? Criar</a>
-  </p>
+    <div id="toast" class="toast" aria-hidden="true"></div>
+  </main>
 
-  <div id="toast" class="toast" aria-hidden="true"></div>
-
-</main>
-
-<script src="js/utils.js"></script>
-<script src="js/login.js"></script>
-
+  <!-- JS -->
+  <script src="js/utils.js"></script>
+  <script src="js/login.js"></script>
 </body>
 </html>

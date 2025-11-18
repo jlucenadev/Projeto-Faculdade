@@ -1,75 +1,94 @@
-let modo = "login"; // muda entre login e cadastro
+let modo = "login"; // login ou cadastro
 
 const form = document.getElementById("loginForm");
 const toggle = document.getElementById("toggleMode");
 const titulo = document.getElementById("loginTitulo");
 const senha = document.getElementById("senha");
 
-// 🔄 Alternar entre LOGIN e CADASTRO
+// alternar login/cadastro
 toggle.addEventListener("click", e => {
   e.preventDefault();
-
   if (modo === "login") {
     modo = "cadastro";
     titulo.textContent = "Criar Conta";
     senha.style.display = "block";
     toggle.textContent = "Já tem conta? Entrar";
     form.querySelector("button").textContent = "Cadastrar";
+    document.getElementById("nome").style.display = "block";
   } else {
     modo = "login";
     titulo.textContent = "Login do Cliente";
-    senha.style.display = "none";
+    senha.style.display = "block";
     toggle.textContent = "Ainda não tem conta? Criar";
     form.querySelector("button").textContent = "Entrar";
+    document.getElementById("nome").style.display = "none";
   }
 });
 
-// 📌 SUBMETER FORMULÁRIO
-form.addEventListener("submit", e => {
+// função toast
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2000);
+}
+
+// enviar formulário
+form.addEventListener("submit", async e => {
   e.preventDefault();
 
   const nome = document.getElementById("nome").value.trim();
   const email = document.getElementById("email").value.trim();
   const senhaVal = document.getElementById("senha").value.trim();
+  const cpf = document.getElementById("cpf")?.value.trim();        // se tiver input cpf
+  const endereco1 = document.getElementById("endereco1")?.value.trim();
+  const endereco2 = document.getElementById("endereco2")?.value.trim();
 
-  if (!email.includes("@")) return showToast("Digite um e-mail válido");
+  if (!email.includes("@") || !senhaVal) return showToast("E-mail ou senha inválidos");
 
-  // carregar usuários salvos
-  let usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+  try {
+    if (modo === "cadastro") {
+      if (!nome || !cpf || !endereco1) return showToast("Preencha todos os campos");
 
-  // ➕ CADASTRO
-  if (modo === "cadastro") {
-    if (!nome) return showToast("Informe seu nome");
-    if (!senhaVal) return showToast("Crie uma senha");
+      const res = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, email, senha: senhaVal, cpf, endereco1, endereco2 })
+      });
 
-    if (usuarios.find(u => u.email === email))
-      return showToast("E-mail já cadastrado!");
+      const data = await res.json();
 
-    usuarios.push({ nome, email, senha: senhaVal });
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      if (!res.ok) return showToast(data.error);
 
-    showToast("Conta criada! Faça login.");
+      showToast("Conta criada! Faça login.");
+      modo = "login";
+      titulo.textContent = "Login do Cliente";
+      toggle.textContent = "Ainda não tem conta? Criar";
+      form.querySelector("button").textContent = "Entrar";
+      form.reset();
 
-    // volta automaticamente para login
-    modo = "login";
-    titulo.textContent = "Login do Cliente";
-    senha.style.display = "none";
-    toggle.textContent = "Ainda não tem conta? Criar";
-    form.querySelector("button").textContent = "Entrar";
-    form.reset();
-    return;
+    } else {
+      // LOGIN
+      const res = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha: senhaVal })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) return showToast(data.error);
+
+      // salvar token e info do usuário
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("usuario", JSON.stringify(data.usuario));
+
+      showToast("Login realizado!");
+      setTimeout(() => location.href = "index.html", 900);
+    }
+
+  } catch (err) {
+    console.log(err);
+    showToast("Erro na conexão com o servidor");
   }
-
-  // 🔐 LOGIN
-  const user = usuarios.find(u => u.email === email && u.senha === senhaVal);
-
-  if (!user) return showToast("Credenciais incorretas");
-
-  localStorage.setItem("usuario", JSON.stringify({ nome: user.nome, email }));
-
-  showToast("Login realizado!");
-
-  setTimeout(() => {
-    location.href = "cliente.html";
-  }, 800);
 });
