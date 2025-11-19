@@ -12,31 +12,31 @@ O **Chef Express** é um sistema completo de gerenciamento para restaurantes des
 
 ## 🏗️ Arquitetura do Sistema
 Projeto-Faculdade/
-├── frontend/ # Aplicação cliente (Chef Express)
-│ ├── html/ # Páginas da aplicação
-│ │ ├── index.html # Página inicial
-│ │ ├── login.html # Autenticação
-│ │ ├── cliente.html # Área do cliente
-│ │ ├── admin.html # Painel administrativo
-│ │ ├── carrinho.html # Gestão de carrinho
-│ │ ├── checkout.html # Finalização de pedido
-│ │ └── pedido.html # Acompanhamento de pedidos
-│ ├── css/ # Estilos e design
-│ ├── js/ # Lógica do front-end
-│ │ ├── login.js # Autenticação
-│ │ ├── produtos.js # Catálogo de produtos
-│ │ ├── carrinho.js # Gestão do carrinho
-│ │ ├── pedido.js # Controle de pedidos
-│ │ ├── cliente.js # Perfil do cliente
-│ │ ├── checkout.js # Processo de checkout
-│ │ └── admin-dashboard.js # Painel admin
-│ └── img/ # Assets e imagens
-└── servidor/ # API Back-end
-├── server.js # Servidor principal Express.js
-├── package.json # Dependências e scripts
-├── package-lock.json # Lock das dependências
-├── .env # Variáveis de ambiente
-└── node_modules/ # Dependências instaladas
+├── frontend/                # Aplicação cliente (Chef Express)
+│   ├── html/                # Páginas da aplicação
+│   │   ├── index.html       # Página inicial
+│   │   ├── login.html       # Autenticação
+│   │   ├── cliente.html     # Área do cliente
+│   │   ├── admin.html       # Painel administrativo
+│   │   ├── carrinho.html    # Gestão de carrinho
+│   │   ├── checkout.html    # Finalização de pedido
+│   │   └── pedido.html      # Acompanhamento de pedidos
+│   ├── css/                 # Estilos e design
+│   ├── js/                  # Lógica do front-end
+│   │   ├── login.js         # Autenticação
+│   │   ├── produtos.js      # Catálogo de produtos
+│   │   ├── carrinho.js      # Gestão do carrinho
+│   │   ├── pedido.js        # Controle de pedidos
+│   │   ├── cliente.js       # Perfil do cliente
+│   │   ├── checkout.js      # Processo de checkout
+│   │   └── admin-dashboard.js # Painel admin
+│   └── img/                 # Assets e imagens
+└── servidor/                # API Back-end
+    ├── server.js            # Servidor principal Express.js
+    ├── package.json         # Dependências e scripts
+    ├── package-lock.json    # Lock das dependências
+    ├── .env                 # Variáveis de ambiente
+    └── node_modules/        # Dependências instaladas
 
 text
 
